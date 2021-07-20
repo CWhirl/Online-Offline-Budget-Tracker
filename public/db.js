@@ -15,13 +15,17 @@ request.onupgradeneeded = function(event) {
     };
 };
 
-function checkDatabase() {
+function updateDatabase() {
     let transaction = db.transaction(["StoreName"], 'readwrite');
     const store = transaction.objectStore("StoreName");
     const records = store.getAll();
 
+    // Update the database with the new data
     records.onsuccess = function () {
-
+        if (records.result.length > 0) {
+            jQuery.post("/api/transaction/bulk", JSON.stringify(records.result)) 
+        }
     }
 };
 
+window.addEventListener('online', updateDatabase);
